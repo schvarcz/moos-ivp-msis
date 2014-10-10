@@ -105,6 +105,49 @@ bool LocalizationSonar::OnNewMail(MOOSMSG_LIST &NewMail)
             }
             hasImage = true;
         }
+        if( msg.GetKey() == "SONAR_DISTANCE")
+        {
+            float angle = 0;
+            MOOSValFromString(angle, msg.GetString(), "bearing");
+
+            float ad_interval = 0.25056;
+            MOOSValFromString(ad_interval, msg.GetString(), "ad_interval");
+            
+            float distance = 0.;
+            MOOSValFromString(distance, msg.GetString(), "distance");
+            //double scale = 60.0;
+            double scale = 4.0;
+            double mag_step = scale * distance / 2.0;
+
+            for (double alpha = angle-2.; alpha <angle+2.; alpha+=0.5)
+            {
+                for(double i=mag_step+ad_interval; i>0;i-=ad_interval)
+                {
+                    double cos_b = cos(MOOSDeg2Rad(-alpha) + heading );
+                    double sin_b = sin(MOOSDeg2Rad(-alpha) + heading );
+                    int x = sin_b*i + sonarImg.cols/2.-0.5;
+                    int y = cos_b*i + sonarImg.rows/2.-0.5;
+
+                    if (x<0 || x>=sonarImg.cols || y<0 || y>=sonarImg.rows)
+                        continue;
+                    int val = sonarImg.at<int>(x,y);
+//                    cout << val;
+                    cout << i<< " - " << mag_step <<endl;
+                    if(i == mag_step)
+                    {
+                        cout << "Aqui" << endl;
+                        sonarImg.at<unsigned char>(x,y) = 255;//std::min(255,(int)(val +7*255./15.));
+                    }
+                    else
+                    {
+                        //sonarImg.at<unsigned char>(x,y) = std::max(0,(int)(val -1*255./15.));
+                    }
+                    
+                    cout << sonarImg.at<int>(x,y) << " - " << (unsigned int)std::min(255,(int)(val +3*255./15.)) << endl;
+                }
+            }
+            hasImage = true;
+        }
     }
 
     return(true);
@@ -207,7 +250,8 @@ bool LocalizationSonar::OnStartUp()
 void LocalizationSonar::RegisterVariables()
 {
     // m_Comms.Register("FOOBAR", 0);
-    m_Comms.Register("SONAR_RAW_DATA", 0);
+    //m_Comms.Register("SONAR_RAW_DATA", 0);
+    m_Comms.Register("SONAR_DISTANCE", 0);
     //m_Comms.Register("YAW", 0);
     m_Comms.Register("HEADING", 0);
 }

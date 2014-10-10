@@ -1,0 +1,11 @@
+//------------------------------------------------
+// pLocalizationMask config block
+
+ProcessConfig = pLocalizationMask
+{
+   AppTick   = 4
+   CommsTick = 4
+   
+   LOGS_FOLDER = "./logs"
+}
+

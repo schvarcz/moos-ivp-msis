@@ -1,0 +1,15 @@
+ServerHost = localhost
+ServerPort = 9000
+Community = VICI
+
+//------------------------------------------------
+// pLocalisationMask config block
+
+ProcessConfig = pLocalisationMask
+{
+   AppTick   = 0.25
+   CommsTick = 0.025
+   
+   LOGS_FOLDER = "./logs"
+}
+
